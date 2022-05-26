@@ -63,9 +63,12 @@ class fractal2D:
                     return guess
 
             print(i)
+        
 
         print(guess)
         return guess
+    def Guesszeri(self,xd):
+            pass
 
 
 
