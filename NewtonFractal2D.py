@@ -41,7 +41,7 @@ class fractal2D:
         for i in range(2): #loop to lambdify the functions in the jacobianMatrix(from sympy to function)
             jacobianMatrix[i,0] = sym.lambdify([a,b], jacobianMatrix[i,0], 'numpy')
             jacobianMatrix[i,1] = sym.lambdify([a,b], jacobianMatrix[i,1], 'numpy')
-        print(jacobianMatrix[1,1](1,1))
+        #print(jacobianMatrix[1,1](1,1))
         
         #start the newton method intervals
         gList = []
@@ -59,7 +59,6 @@ class fractal2D:
 
             #print(jMnumbers)
             if np.linalg.det(jMnumbers) == 0:
-                print("lmao")
                 jMnumbers[0,0] = jMnumbers[0,0] + self.err
                 jMnumbers[1,1] = jMnumbers[0,1] + self.err
             jMnumbers = np.linalg.inv(jMnumbers)
@@ -69,36 +68,44 @@ class fractal2D:
             gList.append(guess)
             if len(gList) > 2:
                 if abs(gList[i][0] - gList[i-1][0]) < self.err and abs(gList[i][1] - gList[i-1][1]) < self.err:
-                    print(guess)
+                    #print(guess)
                     return guess
 
             #print(i)
         
 
-        print(guess)
+        #print(guess)
         return guess
     def getAmountZeros(self,x0):
         Zeros=[]
         if len(x0) > 2:
             for i in range(len(x0)):
                 q = self.newtonsMethod(x0[i])
-                if len(Zeros) >= 1:
+                if len(Zeros) > 0:
+                    newZero = False
                     for c in range(len(Zeros)):
+                        
                         t,u = abs(q[0] - Zeros[c][0]),abs(q[1] - Zeros[c][1])
+                        #print(t,u)
                         #print(f"This is {t}")
-                        if t < self.err and u < self.err:
-                            print("shit")
-                            pass
+                        if t > 1e-8 and u > 1e-8:
+                            #print("LOL")
+                            newZero = True
+                        else:
+                            newZero = False
+                    if newZero == True:
+                        Zeros.append(q)
                 else:
                     Zeros.append(q)
         else:
-            print("sjhit")
+            #print("sjhit")
             q = self.newtonsMethod(x0)
             Zeros.append(q)
         
-        #print(Zeros)
+        print(Zeros)
         print(len(Zeros))
-        return len(Zeros)
+        #print(Zeros)
+        #return len(Zeros)
 
 a = sym.Symbol('a')
 b = sym.Symbol('b')
@@ -108,10 +115,13 @@ p = fractal2D(a**3 - 3*a*b**2 - 2*a - 2, 3*a**2*b- b**3 - 2*b, 1000)
 
 
 tlist=[]
-for c in range(100):
+for c in range(10):
+    iList = [c*-1,c+1]
+    tlist.append(iList)
+for c in range(10):
     iList = [c,c+1]
     tlist.append(iList)
-print(tlist)
+#print(tlist)
 
-q = [0,1]
+q = [[-2,3],[1,0]]
 fractal2D.getAmountZeros(p,tlist)
