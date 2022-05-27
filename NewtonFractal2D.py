@@ -109,7 +109,7 @@ class fractal2D:
 
 a = sym.Symbol('a')
 b = sym.Symbol('b')
-p = fractal2D(a**3 - 3*a*b**2 - 2*a - 2, 3*a**2*b- b**3 - 2*b, 1000)
+p = fractal2D(a**3 - 3*a*b**2 - 2*a - 2, 3*a**2*b - b**3 - 2*b, 1000)
 
 
 
@@ -121,7 +121,8 @@ for c in range(10):
 for c in range(10):
     iList = [c,c+1]
     tlist.append(iList)
-#print(tlist)
+for c in range(10):
+    iList = [c*-1,(c+1)*-1]
+    tlist.append(iList)
 
-q = [[-2,3],[1,0]]
 fractal2D.getAmountZeros(p,tlist)
