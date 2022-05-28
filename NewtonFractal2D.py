@@ -1,4 +1,3 @@
-from cmath import isclose
 import numpy as np
 import sympy as sym
 import matplotlib.pyplot as plt
@@ -7,9 +6,6 @@ import sys
 
 
 
-class Zeros:
-    def __init__(self,zero):
-        self.zero = zero
     
 class fractal2D:
     def __init__(self, pol1, pol2, nrIterations = 10, err = 1e-100):
@@ -79,7 +75,7 @@ class fractal2D:
         return guess
     def getAmountZeros(self,x0):
         Zeros=[]
-        Tol = 1e-8
+        Tol = 1e-16
         if len(x0) > 2:
             for i in range(len(x0)):
                 q = self.newtonsMethod(x0[i])
@@ -94,20 +90,18 @@ class fractal2D:
 
                     for c in range(len(Zeros)):
                         newZero = False
-                        nzList = [c]
+                        absZero = True
+                        nzList = []
                         #if len(Zeros) > 0:
                         #    if not q in Zeros:
                         #        Zeros.append(q)
                         #else:
                         #    print("ok")
                         
-                        t,u = abs(q[0] - Zeros[-1][0]),abs(q[1] - Zeros[-1][1])
+                        t,u = abs(q[0] - Zeros[c][0]),abs(q[1] - Zeros[c][1])
                         #print(t,u)
                         #print(f"This is {t}")
                         #if np.isclose(Zeros[c][0], q[0], atol = Tol) and np.isclose(Zeros[c][1], q[1], atol = Tol):
-                        r = np.where(Zeros[c][0] == q[0])
-                        if r == True:
-                            break
                         #l = np.isclose(Zeros[c][0], q[0], atol = Tol)
                         #m = np.isclose(Zeros[c][1], q[1], atol = Tol)
                         #if l[0] == False and m[0] == False:
@@ -119,17 +113,27 @@ class fractal2D:
                         #    break
                         #try:
                         #    np.where(np.isclose(Zeros, q, atol = Tol))
-                        if t > Tol and u > Tol:
+                        if t < Tol and u < Tol:
                             #print("LOL")
                             #Zeros[c][0] = q[0]
                             #Zeros[c][1] = q[1]
-                            newZero = True
+                            newZero = False
+                            nzList.append(newZero)
+                            break
+                            #print(t,u)
                         else:
                             #Zeros.append(q)
-                            newZero = False
+                            
+                            print(c)
+                            newZero = True
+                            nzList.append(newZero)
+                            #absZero = True
+                            #break
+                            #print("same")
                             
 
-                    if newZero == True:#len(nzList) == len(Zeros):
+                    if newZero == True: #and absZero == False:
+                    #if len(nzList) == len(Zeros):
                         Zeros.append(q)
                         print("start")
                         print(nzList)
@@ -169,8 +173,8 @@ p = fractal2D(a**8 - 28*a**6*b**2 + 70*a**4 + 15*a**4 - 28*a**2*b**6 - 90*a**2 +
 #a**3 - 3*a*b**2 - 2*a - 2
 #3*a*2*b - b**3 - 2*b
 
-#
-#
+# a**3 - 3*a*b**2 -1
+# 3*a*2*b - b**3
 
 tlist=[]
 for c in range(100):
