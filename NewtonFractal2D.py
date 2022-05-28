@@ -190,9 +190,14 @@ class fractal2D:
         
         
     
-    def plot(self,xmin,xmax,ymin,ymax):
-        
-        fractal2D.getAmountZeros(p,tlist[0])
+    def plot(self):
+        xmin, ymin = -10, -10
+        xmax, ymax = 10, 10
+        nx, ny = (2, 14)
+        x = np.linspace(xmin, xmax, nx)
+        y = np.linspace(ymin, ymax, ny)
+        xv, yv = np.meshgrid(x, y)
+        self.getAmountZeros(yv)
 
         
 #####################
@@ -266,15 +271,17 @@ p = fractal2D(a**8 - 28*a**6*b**2 + 70*a**4 + 15*a**4 - 28*a**2*b**6 - 90*a**2 +
 #    tlist.append(iList)
 
 #print(yv)
-tlist=[]
-      
-xmin, ymin = -200, -200
-xmax, ymax = 200, 200
-nx, ny = (2, 1000)
-x = np.linspace(xmin, xmax, nx)
-y = np.linspace(ymin, ymax, ny)
-xv, yv = np.meshgrid(x, y)
-tlist.append(yv)
-print(len(tlist[0]))
+#tlist=[]
+#      
+#xmin, ymin = -200, -200
+#xmax, ymax = 200, 200
+#nx, ny = (2, 1000)
+#x = np.linspace(xmin, xmax, nx)
+#y = np.linspace(ymin, ymax, ny)
+#xv, yv = np.meshgrid(x, y)
+#tlist.append(yv)
+#print(yv)
+#print(len(tlist[0]))
 
-fractal2D.getAmountZeros(p,tlist[0])
+fractal2D.plot(p)
+#fractal2D.getAmountZeros(p,yv)
