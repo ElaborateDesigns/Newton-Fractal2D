@@ -13,23 +13,26 @@ import sys
     
 class fractal2D:
     def __init__(self, pol1, pol2, nrIterations = 10, err = 1e-100, 
-                 gridstart_x = 0,
-                 gridstart_y = 0,
-                 gridend_x = 3,
-                 gridend_y = 3,
-                 gridsize_x = 4, 
-                 gridsize_y = 3):
+                 min_x = 0,
+                 min_y = 0,
+                 max_x = 3,
+                 max_y = 3,
+                 size_x = 4, 
+                 size_y = 3):
         self.pol1 = pol1
         self.pol2 = pol2
         self.nrIterations = nrIterations
         self.err = err
+
+        if pol1 == pol2:
+            raise SyntaxError("You have entered the same function")
         
         #Grid Calculations stuff             
-        x = np.linspace (gridstart_x, gridend_x, gridsize_x)
-        y = np.linspace (gridstart_y, gridend_y, gridsize_y)
+        x = np.linspace (min_x, max_x, size_x)
+        y = np.linspace (min_y, max_y, size_y)
         self.grid = np.meshgrid(x,y)
         print(self.grid)
-        self.A = np.empty( (gridsize_x, gridsize_y) )
+        self.A = np.empty( (size_x, size_y) )
         self.B = np.zeros(self.A.shape) #default
 
 
@@ -43,8 +46,6 @@ class fractal2D:
     def newtonsMethod(self, guess):
         pol1 = self.pol1
         pol2 = self.pol2
-        if pol1 == pol2:
-            raise SyntaxError("You have entered the same function")
         jacobianMatrix = np.array([[a,a],[a,a]]) #the jacobian matrix
         guess = np.array([[guess[0]],[guess[1]]]) #matrix for the aproximation
         funMatrix = np.empty([2,1]) #array to input the values given the aproxiamtion in polynom
@@ -99,6 +100,10 @@ class fractal2D:
 
         #print(guess)
         return guess
+    
+    
+    
+    
     def getAmountZeros(self,x0):
             
         Zeros=[]
@@ -173,7 +178,7 @@ class fractal2D:
                 #else:
                 #    Zeros.append(q)
         else:
-            q = self.newtonsMethod(x)
+            q = self.newtonsMethod(x0)
             Zeros.append(q)
         #for c in range(len(Zeros)):
         #    if c > 1:
@@ -185,6 +190,7 @@ class fractal2D:
         #            Zeros[c-1][1] = Zeros[c][1]
         print(Zeros)
         print(len(Zeros))
+        self.Zeros = Zeros
         #print(Zeros)
         #return len(Zeros)
         
@@ -193,11 +199,55 @@ class fractal2D:
     def plot(self):
         xmin, ymin = -10, -10
         xmax, ymax = 10, 10
-        nx, ny = (2, 14)
+        nx, ny = (4, 3)
         x = np.linspace(xmin, xmax, nx)
         y = np.linspace(ymin, ymax, ny)
         xv, yv = np.meshgrid(x, y)
         self.getAmountZeros(yv)
+        
+
+
+    
+    def plot2(self): #This is bad and inefficient but I just wanted a working prototype. 
+        xmin, ymin = -10, -10
+        xmax, ymax = 10, 10
+        nx, ny = (50, 50)
+        x = np.linspace(xmin, xmax, nx)
+        y = np.linspace(ymin, ymax, ny)
+        xv, yv = np.meshgrid(x, y)
+        #self.getAmountZeros(yv)
+        self.Zeros=[]
+        self.A = np.zeros( (nx, ny), dtype=int )
+        self.B = np.zeros(self.A.shape)
+        
+        print(f"Matrix A: \n{self.A}")
+        x_coord = -1
+        for x0 in x:
+            x_coord += 1
+            y_coord = -1
+            for y0 in y:
+                y_coord += 1
+                #print(f"{x_coord},{y_coord} = {x0},{y0}")
+                result = self.newtonsMethod( (x0,y0) )
+                i_coord = -1
+                found=False
+                for i in self.Zeros:
+                    i_coord += 1
+                    if (round(float(i[0]),5) == round(float(result[0]),5) 
+                        and round(float(i[1]),5) == round(float(result[1]),5)  ):
+                        found=True
+                        self.A[x_coord,y_coord] = i_coord                         
+                        break
+                if (not found): 
+                    self.Zeros.append(result)
+                    self.A[x_coord,y_coord] = i_coord + 1
+                    print( f"New root: {result} ({round(float(result[0]),5)},{round(float(result[1]),5)})")
+                
+            
+        print(f"MATRIX A: \n{self.A}")
+        self.graph()
+                            
+                        
 
         
 #####################
@@ -216,17 +266,18 @@ class fractal2D:
   	
     def make_cmap(self): 
       """Constructs a custom color map according to the number of base colors and shades of these base colors needed"""
-      nr_of_colors = np.max(self.A)+1
-      max_iter = self.nrIterations
-      min_iter = np.min(self.B)
+      nr_of_colors = 1 + int(np.max(self.A))
+      max_iter = int( np.max(self.B) )
+      min_iter = int( np.min(self.B) )
       palette = [(2,0.5,0.5), (0.5,2.0,0.5), (0.5,0.5,2), (3,3,0), (0, 2, 2), (2, 0, 2) ]
       colors = []
+      print(f"nr of colors: {nr_of_colors}, min_iter: {min_iter}, max_iter: {max_iter}")
       for i in range(0, nr_of_colors): 
         base_color = palette[i]
         for j in range(min_iter, max_iter+1): 
           new_color = self.shade_color(base_color, j, min_iter, max_iter)
           colors.append(new_color)
-      #print(f"cmap: {colors}")
+      print(f"cmap: {colors}")
       return col.LinearSegmentedColormap.from_list("mycmap", colors)
 
     
@@ -240,7 +291,7 @@ class fractal2D:
 
 
 #################
-### ClASS END ###
+### CLASS END ###
 #################    
 
 a = sym.Symbol('a')
@@ -283,5 +334,5 @@ p = fractal2D(a**8 - 28*a**6*b**2 + 70*a**4 + 15*a**4 - 28*a**2*b**6 - 90*a**2 +
 #print(yv)
 #print(len(tlist[0]))
 
-fractal2D.plot(p)
+fractal2D.plot2(p)
 #fractal2D.getAmountZeros(p,yv)
