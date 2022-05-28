@@ -6,13 +6,39 @@ import sys
 
 
 
+###################
+### CLASS START ###
+###################
+
     
 class fractal2D:
-    def __init__(self, pol1, pol2, nrIterations = 10, err = 1e-100):
+    def __init__(self, pol1, pol2, nrIterations = 10, err = 1e-100, 
+                 gridstart_x = 0,
+                 gridstart_y = 0,
+                 gridend_x = 3,
+                 gridend_y = 3,
+                 gridsize_x = 4, 
+                 gridsize_y = 3):
         self.pol1 = pol1
         self.pol2 = pol2
         self.nrIterations = nrIterations
         self.err = err
+        
+        #Grid Calculations stuff             
+        x = np.linspace (gridstart_x, gridend_x, gridsize_x)
+        y = np.linspace (gridstart_y, gridend_y, gridsize_y)
+        self.grid = np.meshgrid(x,y)
+        print(self.grid)
+        self.A = np.empty( (gridsize_x, gridsize_y) )
+        self.B = np.zeros(self.A.shape) #default
+
+
+        
+#######################
+### CALCULATE ROOTS ###
+###     SECTION     ###
+#######################        
+
 
     def newtonsMethod(self, guess):
         pol1 = self.pol1
@@ -160,9 +186,55 @@ class fractal2D:
         print(len(Zeros))
         #print(Zeros)
         #return len(Zeros)
+        
+        
     
     def plot(self,xmin,xmax,ymin,ymax):
         G = {}
+
+        
+#####################
+### PRINT-A-GRAPH ###
+###    SECTION    ###
+#####################
+
+
+    def shade_color(self, base, val, minimum, maximum):
+      """Shades a base color darker, the more iterations the color is assigned to show."""
+      #print(f"shade_color(val={val}, min={min} ")
+      #print(f"divider = ( {val}-{min}+1 ")
+      if (val < minimum): raise Exception(f"val={val} < minimum={minimum}")
+      return tuple(i/(val - minimum + 1) for i in base)
+
+  	
+    def make_cmap(self): 
+      """Constructs a custom color map according to the number of base colors and shades of these base colors needed"""
+      nr_of_colors = np.max(self.A)+1
+      max_iter = self.nrIterations
+      min_iter = np.min(self.B)
+      palette = [(2,0.5,0.5), (0.5,2.0,0.5), (0.5,0.5,2), (3,3,0), (0, 2, 2), (2, 0, 2) ]
+      colors = []
+      for i in range(0, nr_of_colors): 
+        base_color = palette[i]
+        for j in range(min_iter, max_iter+1): 
+          new_color = self.shade_color(base_color, j, min_iter, max_iter)
+          colors.append(new_color)
+      #print(f"cmap: {colors}")
+      return col.LinearSegmentedColormap.from_list("mycmap", colors)
+
+    
+    def graph(self):
+      """Makes a graph from A, a matrix of root indices, and B, a matrix of iteration counts."""
+      max_iter = self.nrIterations
+      C = self.A*(max_iter + 1) + self.B
+      #print(C)
+      plt.imshow(C, cmap=self.make_cmap() )
+      plt.show()
+
+
+#################
+### ClASS END ###
+#################    
 
 a = sym.Symbol('a')
 b = sym.Symbol('b')
