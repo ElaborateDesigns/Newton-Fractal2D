@@ -100,11 +100,16 @@ class fractal2D:
         #print(guess)
         return guess
     def getAmountZeros(self,x0):
+            
         Zeros=[]
         Tol = 1e-16
-        if len(x0) > 2:
+        print(len(x0))
+        if len(x0) > 1:
             for i in range(len(x0)):
-                q = self.newtonsMethod(x0[i])
+                x1 = [x0[i][0], x0[i][1]]
+                print(i)
+                print(x1)
+                q = self.newtonsMethod(x1)
                 
                 if i == 0: 
                     Zeros.append(q)
@@ -117,8 +122,6 @@ class fractal2D:
 
                     for c in range(len(Zeros)):
                         newZero = False
-                        absZero = True
-                        nzList = []
                         #if len(Zeros) > 0:
                         #    if not q in Zeros:
                         #        Zeros.append(q)
@@ -129,40 +132,38 @@ class fractal2D:
                         #print(t,u)
                         #print(f"This is {t}")
                         #if np.isclose(Zeros[c][0], q[0], atol = Tol) and np.isclose(Zeros[c][1], q[1], atol = Tol):
-                        #l = np.isclose(Zeros[c][0], q[0], atol = Tol)
-                        #m = np.isclose(Zeros[c][1], q[1], atol = Tol)
-                        #if l[0] == False and m[0] == False:
-                        #    newZero = True
-                        #    #print(Zeros[c])
-                        #    nzList.append(1)
-                        #else:
-                        #    newZero = False
-                        #    break
+                        l = np.isclose(Zeros[c][0], q[0], atol = Tol)
+                        m = np.isclose(Zeros[c][1], q[1], atol = Tol)
+                        if l[0] == True and m[0] == True:
+                            newZero = False
+                            break
+                        else:
+                            #print("true")
+                            newZero = True
                         #try:
                         #    np.where(np.isclose(Zeros, q, atol = Tol))
-                        if t < Tol and u < Tol:
-                            #Zeros[c][0] = q[0]
-                            #Zeros[c][1] = q[1]
-                            newZero = False
-                            nzList.append(newZero)
-                            break
-                            #print(t,u)
-                        else:
-                            #Zeros.append(q)
-                            
-                            #print(c)
-                            newZero = True
-                            nzList.append(newZero)
-                            #absZero = True
-                            #break
-                            #print("same")
+                        #if t < Tol and u < Tol:
+                        #    #Zeros[c][0] = q[0]
+                        #    #Zeros[c][1] = q[1]
+                        #    newZero = False
+                        #    nzList.append(newZero)
+                        #    break
+                        #    #print(t,u)
+                        #else:
+                        #    #Zeros.append(q)
+                        #    
+                        #    #print(c)
+                        #    newZero = True
+                        #    nzList.append(newZero)
+                        #    #absZero = True
+                        #    #break
+                        #    #print("same")
                             
 
                     if newZero == True: #and absZero == False:
                     #if len(nzList) == len(Zeros):
                         Zeros.append(q)
                         print("start")
-                        print(nzList)
                         print(len(Zeros))
                         print(i)
                         print(q)
@@ -172,7 +173,7 @@ class fractal2D:
                 #else:
                 #    Zeros.append(q)
         else:
-            q = self.newtonsMethod(x0)
+            q = self.newtonsMethod(x)
             Zeros.append(q)
         #for c in range(len(Zeros)):
         #    if c > 1:
@@ -190,7 +191,8 @@ class fractal2D:
         
     
     def plot(self,xmin,xmax,ymin,ymax):
-        G = {}
+        
+        fractal2D.getAmountZeros(p,tlist[0])
 
         
 #####################
@@ -252,15 +254,27 @@ p = fractal2D(a**8 - 28*a**6*b**2 + 70*a**4 + 15*a**4 - 28*a**2*b**6 - 90*a**2 +
 # 3*a*2*b - b**3
 
 ###############################################################################################################################################################################
-tlist=[]
-for c in range(100):
-    iList = [c*-1,c+1]
-    tlist.append(iList)
-for c in range(100):
-    iList = [c,c+1]
-    tlist.append(iList)
-for c in range(100):
-    iList = [c*-1,(c+1)*-1]
-    tlist.append(iList)
 
-fractal2D.getAmountZeros(p,tlist)
+#for c in range(100):
+#    iList = [c*-1,c+1]
+#    tlist.append(iList)
+#for c in range(100):
+#    iList = [c,c+1]
+#    tlist.append(iList)
+#for c in range(100):
+#    iList = [c*-1,(c+1)*-1]
+#    tlist.append(iList)
+
+#print(yv)
+tlist=[]
+      
+xmin, ymin = -200, -200
+xmax, ymax = 200, 200
+nx, ny = (2, 1000)
+x = np.linspace(xmin, xmax, nx)
+y = np.linspace(ymin, ymax, ny)
+xv, yv = np.meshgrid(x, y)
+tlist.append(yv)
+print(len(tlist[0]))
+
+fractal2D.getAmountZeros(p,tlist[0])
