@@ -79,6 +79,7 @@ class fractal2D:
         if len(x0) > 2:
             for i in range(len(x0)):
                 q = self.newtonsMethod(x0[i])
+                
                 if i == 0: 
                     Zeros.append(q)
                 if len(Zeros) > 0:
@@ -114,7 +115,6 @@ class fractal2D:
                         #try:
                         #    np.where(np.isclose(Zeros, q, atol = Tol))
                         if t < Tol and u < Tol:
-                            #print("LOL")
                             #Zeros[c][0] = q[0]
                             #Zeros[c][1] = q[1]
                             newZero = False
@@ -124,7 +124,7 @@ class fractal2D:
                         else:
                             #Zeros.append(q)
                             
-                            print(c)
+                            #print(c)
                             newZero = True
                             nzList.append(newZero)
                             #absZero = True
@@ -160,6 +160,9 @@ class fractal2D:
         print(len(Zeros))
         #print(Zeros)
         #return len(Zeros)
+    
+    def plot(self,xmin,xmax,ymin,ymax):
+        G = {}
 
 a = sym.Symbol('a')
 b = sym.Symbol('b')
@@ -176,6 +179,7 @@ p = fractal2D(a**8 - 28*a**6*b**2 + 70*a**4 + 15*a**4 - 28*a**2*b**6 - 90*a**2 +
 # a**3 - 3*a*b**2 -1
 # 3*a*2*b - b**3
 
+###############################################################################################################################################################################
 tlist=[]
 for c in range(100):
     iList = [c*-1,c+1]
