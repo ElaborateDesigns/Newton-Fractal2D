@@ -211,7 +211,7 @@ class fractal2D:
     def plot2(self): #This is bad and inefficient but I just wanted a working prototype. 
         xmin, ymin = -10, -10
         xmax, ymax = 10, 10
-        nx, ny = (50, 50)
+        nx, ny = (300, 300)
         x = np.linspace(xmin, xmax, nx)
         y = np.linspace(ymin, ymax, ny)
         xv, yv = np.meshgrid(x, y)
