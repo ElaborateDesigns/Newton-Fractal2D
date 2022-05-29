@@ -107,8 +107,8 @@ class fractal2D:
         if len(x0) > 1:
             for i in range(len(x0)):
                 x1 = [x0[i][0], x0[i][1]]
-                print(i)
-                print(x1)
+                #print(i)
+                #print(x1)
                 q = self.newtonsMethod(x1)
                 
                 if i == 0: 
@@ -172,9 +172,9 @@ class fractal2D:
                         #break
                 #else:
                 #    Zeros.append(q)
-        else:
-            q = self.newtonsMethod(x)
-            Zeros.append(q)
+        #else:
+        #    q = self.newtonsMethod(x)
+        #    Zeros.append(q)
         #for c in range(len(Zeros)):
         #    if c > 1:
         #        try np.where(np.isclose(Zeros, ))
@@ -185,20 +185,66 @@ class fractal2D:
         #            Zeros[c-1][1] = Zeros[c][1]
         print(Zeros)
         print(len(Zeros))
-        #print(Zeros)
-        #return len(Zeros)
+        return len(Zeros)
         
         
     
     def plot(self):
+        N = 100
         xmin, ymin = -10, -10
         xmax, ymax = 10, 10
-        nx, ny = (2, 14)
+
+        nx, ny = (N, N)
         x = np.linspace(xmin, xmax, nx)
         y = np.linspace(ymin, ymax, ny)
         xv, yv = np.meshgrid(x, y)
-        self.getAmountZeros(yv)
+        A = np.array(range(N**2)).reshape(N,N)
+        for i in range(nx):
+            for j in range(ny):
+                pos1 = xv[i]
+                pos2 = yv[j]
+                A[i,j] = np.array([pos1,pos2])
 
+        self.getAmountZeros(A)
+        #self.getAmountZeros(yv)
+    def plot2(self): #This is bad and inefficient but I just wanted a working prototype. 
+        xmin, ymin = -10, -10
+        xmax, ymax = 10, 10
+        nx, ny = (50, 50)
+        x = np.linspace(xmin, xmax, nx)
+        y = np.linspace(ymin, ymax, ny)
+        xv, yv = np.meshgrid(x, y)
+        #self.getAmountZeros(yv)
+        self.Zeros=[]
+        self.A = np.zeros( (nx, ny), dtype=int )
+        self.B = np.zeros(self.A.shape)
+        
+        print(f"Matrix A: \n{self.A}")
+        x_coord = -1
+        for x0 in x:
+            x_coord += 1
+            y_coord = -1
+            for y0 in y:
+                y_coord += 1
+                #print(f"{x_coord},{y_coord} = {x0},{y0}")
+                result = self.newtonsMethod( (x0,y0) )
+                i_coord = -1
+                found=False
+                for i in self.Zeros:
+                    i_coord += 1
+                    if (round(float(i[0]),5) == round(float(result[0]),5) 
+                        and round(float(i[1]),5) == round(float(result[1]),5)  ):
+                        found=True
+                        self.A[x_coord,y_coord] = i_coord                         
+                        break
+                if (not found): 
+                    self.Zeros.append(result)
+                    self.A[x_coord,y_coord] = i_coord + 1
+                    print( f"New root: {result} ({round(float(result[0]),5)},{round(float(result[1]),5)})")
+                
+            
+        print(f"MATRIX A: \n{self.A}")
+        self.graph()
         
 #####################
 ### PRINT-A-GRAPH ###
@@ -283,5 +329,46 @@ p = fractal2D(a**8 - 28*a**6*b**2 + 70*a**4 + 15*a**4 - 28*a**2*b**6 - 90*a**2 +
 #print(yv)
 #print(len(tlist[0]))
 
-fractal2D.plot(p)
-#fractal2D.getAmountZeros(p,yv)
+tlist=[]
+for i in range(2):
+    for c in range(2):
+        templist=[i,c]
+        tlist.append(templist)
+
+for i in range(2):
+    for c in range(2):
+        templist=[i,c*(-1)]
+        tlist.append(templist)
+
+for i in range(2):
+    for c in range(2):
+        templist=[i*(-1),c]
+        tlist.append(templist)
+
+for i in range(2):
+    for c in range(2):
+        templist=[i*(-1),c*(-1)]
+        tlist.append(templist)
+
+#c = np.array(range(len(tlist))).reshape((1,len(tlist)))
+c = []
+#print(c)
+print(tlist)
+for i in range(len(tlist)):
+    q = np.array(tlist[i])
+    c.append(q)
+    #c[0][i] = np.array([tlist[i][0]])
+    #print(c)
+#print(c[0][0])
+#fractal2D.getAmountZeros(p,c)
+#tlist = [[0, 0], [0, 1], [1, 0], [1, 1], [0, 0], [0, -1], [1, 0], [1, -1], [0, 0], [0, 1], [-1, 0], [-1, 1], [0, 0], [0, -1], [-1, 0], [-1, -1]]
+fractal2D.plot2(p)
+
+#for i in range(len(tlist)):
+#    print("start")
+#    print(i)
+#    c = np.array([tlist[i]])
+#    #print(c)
+#    fractal2D.getAmountZeros(p,c)
+#    print("end")
+    
