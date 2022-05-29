@@ -170,12 +170,18 @@ class TestIdentity(unittest.TestCase):
         
         
     def test_make_graph(self):
+        print("MAKE GRAPH")
         a, b = sym.Symbol('a'), sym.Symbol('b') 
         eq1, eq2 = a**3 - 3*a*b**2 - 1, 3*a**2*b - b**3
         f = fractal2D(eq1, eq2, 100)   
         
         #Makes a 3x4 grid, red all one color, green blue and yellow getting darker. 
         f.A = np.array([[0,1,2,3],[0,1,2,3],[0,1,2,3]])
+        f.B = np.array([[5,5,5,5],[5,6,6,6],[5,7,8,9]])
+        f.graph()
+        
+        #Makes a 3x4 grid, red all one color, green blue and yellow getting darker. 
+        f.A = np.array([[0.,1.,2.,3.],[0.,1.,2.,3.],[0.,1.,2.,3.]])
         f.B = np.array([[5,5,5,5],[5,6,6,6],[5,7,8,9]])
         f.graph()
         
