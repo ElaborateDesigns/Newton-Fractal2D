@@ -271,4 +271,4 @@ p = fractal2D(F, G, dxF, dyF, dxG, dyG)
 q = fractal2D(H, I, dxH, dyH, dxI, dyI)
 r = fractal2D(J, K, dxJ, dyJ, dxK, dyK)
 #Change p to q or r for different polinomials
-p.plotItr(10, -10, 10, -10, 10, 2)
+r.plotItr(1000, -7.5, 7.5, -7.5, 7.5, 1)
