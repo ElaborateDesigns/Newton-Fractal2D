@@ -1,6 +1,3 @@
-from operator import truediv
-from platform import java_ver
-from pyclbr import Function
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -112,7 +109,7 @@ class fractal2D:                                                                
                         return 0
                 JacobianMatrix = np.array(JacobianMatrix)
                 guess = np.array(guess)
-                guess = guess - np.dot(np.linalg.inv(JacobianMatrix), np.array([self.pol1([x,y]),self.pol2([x,y])]))
+                guess = guess - np.dot(np.linalg.inv(JacobianMatrix), np.array([self.pol1([x,y]),self.pol2([x,y])])) #xn+1 = xn - J^-1*f(xn)
                 xNew = guess[0]
                 yNew = guess[1]
                 if abs(x-xNew) <= 1.e-6 and abs(y-yNew) <= 1.e-6:   # x is still the "old" x value so if we compare it to the "new"x with subtraction and the absolute with the answer is suffieciently small (1e-6) the we conclude that the method has converged
@@ -157,66 +154,46 @@ class fractal2D:                                                                
     def simpleNewtonMethod(self, guess, itersteps = False): # Largely the same as newtons method except the jacobian is only computed once, and outside of the main for loop. This makes it not update and makes this method extremly slow to convege
         x = guess[0]
         y = guess[1]
+
         if self.derivativeAprrox == True:
-            JacobianMatrix = [np.array([self.dxPol1(guess), self.dyPol1(guess)]), np.array([self.dxPol2(guess), self.dyPol2(guess)])]
-            if np.linalg.det(JacobianMatrix) == 0 and abs(self.pol1(guess)) < 1.e-6 and abs(self.pol2(guess)) < 1.e-9:
-                if itersteps == False:
-                    return guess
-                else:
-                    return i+1
-            elif np.linalg.det(JacobianMatrix) == 0:
-                if itersteps == False:
-                    return None
-                else:
-                    return 0
-            for i in range(10000):          # Range is larger because of the horrid convergence
-                JacobianMatrix=np.array(JacobianMatrix)
-                guess = np.array(guess)
-                guess = guess-np.dot(np.linalg.inv(JacobianMatrix), np.array([self.pol1([x,y]),self.pol2([x,y])]))
-                xNew = guess[0]
-                yNew = guess[1]
-                if abs(x-xNew) <= 1.e-6 and abs(y-yNew) <= 1.e-6:
-                    if itersteps == False:
-                        return [xNew, yNew]
-                    else:
-                        return i+1
-                elif i == 9999:         
-                    if itersteps == False:
-                        return None
-                    else:
-                        return 0
-                x = xNew
-            y = yNew
+            JacobianMatrix = [np.array([self.approxXDer(guess), self.approxYDer(guess)]), np.array([self.approxXDer(guess), self.approxYDer(guess)])]
         else:
             JacobianMatrix = [np.array([self.dxPol1(guess), self.dyPol1(guess)]), np.array([self.dxPol2(guess), self.dyPol2(guess)])]
-            if np.linalg.det(JacobianMatrix) == 0 and abs(self.pol1(guess)) < 1.e-6 and abs(self.pol2(guess)) < 1.e-9:
-                if itersteps == False:
-                    return guess
-                else:
-                    return i+1
-            elif np.linalg.det(JacobianMatrix) == 0:
+            
+        if np.linalg.det(JacobianMatrix) == 0 and abs(self.pol1(guess)) < 1.e-6 and abs(self.pol2(guess)) < 1.e-9:
+            if itersteps == False:
+                return guess
+            else:
+                return 1
+        elif np.linalg.det(JacobianMatrix) == 0:
+            if itersteps == False:
+                return None
+            else:
+                return 0
+        for i in range(10000):          # Range is larger because of the horrid convergence
+            if guess[0] > 1e5 or guess[1] > 1e5:
                 if itersteps == False:
                     return None
                 else:
                     return 0
-            for i in range(10000):
-                JacobianMatrix=np.array(JacobianMatrix)
-                guess=np.array(guess)
-                guess=guess-np.dot(np.linalg.inv(JacobianMatrix), np.array([self.pol1([x,y]),self.pol2([x,y])]))
-                xNew=guess[0]
-                yNew=guess[1]
-                if abs(x-xNew) <= 1.e-6 and abs(y-yNew) <= 1.e-6:
-                    if itersteps == False:
-                        return [xNew, yNew]
-                    else:
-                        return i+1
-                elif i == 9999:
-                    if itersteps == False:
-                        return None
-                    else:
-                        return 0
-                x = xNew
-                y = yNew
+            JacobianMatrix=np.array(JacobianMatrix)
+            guess = np.array(guess)
+            guess = guess-np.dot(np.linalg.inv(JacobianMatrix), np.array([self.pol1([x,y]),self.pol2([x,y])]))
+            xNew = guess[0]
+            yNew = guess[1]
+            if abs(x-xNew) <= 1.e-6 and abs(y-yNew) <= 1.e-6:
+                if itersteps == False:
+                    return [xNew, yNew]
+                else:
+                    return i+1
+            elif i == 9999:         
+                if itersteps == False:
+                    return None
+                else:
+                    return 0
+            x = xNew
+            y = yNew
+        
     def NewZero(self, guess, NewtonType = 1):  #Newton type is input by the user later but all the method does os check our self.zeroes for the guess we just converged
         if NewtonType == 1:                    # IF newtontype is one use the regular newtonMethod
             Zero = self.newtonsMethod(guess)
@@ -238,12 +215,11 @@ class fractal2D:                                                                
             elif len(self.zeroes) == 1:                                         # If its the first time we look through the list (and we do not have None as the zero) we know that the list just has None and nothing else
                 self.zeroes.append(Zero)                                        # Since the list is empty except None we just append the zero
                 return self.zeroes.index(Zero)                                  # Return the index of the Zero
-    def Plot(self, N, a, b, c, d):             # Plot is made with 4 params. N = resolution a is the minimum x, b is the max of x, c is the min of y and d is the max of y
+    def Plot(self, N, a, b, c, d, UserNewtonType):             # Plot is made with 4 params. N = resolution a is the minimum x, b is the max of x, c is the min of y and d is the max of y. It also takes which newtonmethod to use
         xvalues = np.linspace(a, b, N)         # Makes a linspace of a,b witht he step size N for the x values
         yvalues = np.linspace(c, d, N)         # and y values
         [xv, yv] = np.meshgrid(xvalues, yvalues)        #Makes a meshgrid of our two lispace lists of xv and yv (stands for xvalues and yvalues)
-        print("Choose between newton methods [1 (normal), 2 (simplified):")     # prints a text
-        UserNewtonType = input()                                                # Waits for user input
+        
 
         ZeroIndexMatrix = np.zeros((N,N))                                       # Creates an empty NxN matrix
 
@@ -272,12 +248,10 @@ class fractal2D:                                                                
             else:
                 self.zeroIndex.append(Iter)
 
-    def plotItr(self, N, a, b, c, d): # Only difference between this plot and the normal Plot is that we can get a different color for each zero and how long(many iterations) it took to converge
+    def plotItr(self, N, a, b, c, d, UserNewtonType): # Only difference between this plot and the normal Plot is that we can get a different color for each zero and how long(many iterations) it took to converge
         xvalues = np.linspace(a, b, N)
         yvalues = np.linspace(c, d, N)
         [xv, yv] = np.meshgrid(xvalues, yvalues)
-        print("Choose between newton methods [1 (normal), 2 (simplified):")
-        UserNewtonType = input()
 
         IterIndexMatrix = np.zeros((N,N))
         
@@ -297,4 +271,4 @@ p = fractal2D(F, G, dxF, dyF, dxG, dyG)
 q = fractal2D(H, I, dxH, dyH, dxI, dyI)
 r = fractal2D(J, K, dxJ, dyJ, dxK, dyK)
 #Change p to q or r for different polinomials
-p.plotItr(10, -10, 10, -10, 10)
+p.plotItr(10, -10, 10, -10, 10, 2)
