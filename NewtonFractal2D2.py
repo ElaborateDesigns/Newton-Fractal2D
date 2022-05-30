@@ -40,22 +40,22 @@ def dyI(x):
     return 3*x[0]**2-3*x[1]**2-2
 
 def J(x):
-    return x[0]**8 -28*x[0]**6*x[1]**2 +70*x[0]**4*x[1]**4 +15*x[0]**4 -28*x[0]**2*x[1]**6 -90*x[0]**2*x[1]**2 +15*x[1]**4 -16
+    return x[0]**8 -28*x[0]**6*x[1]**2 +70*x[0]**4*x[1]**4 +15*x[0]**4 -28*x[0]**2*x[1]**6 -90*x[0]**2*x[1]**2 + x[1]**8 +15*x[1]**4 -16
 
 def K(x):
     return 8*x[0]**7*x[1] -56*x[0]**5*x[1]**3 +56*x[0]**3*x[1]**5 +60*x[0]**3*x[1] -8*x[0]*x[1]**7 -60*x[0]*x[1]**3
 
 def dxJ(x):
-    return 8*x[0]**7 +280*x[0]**3*x[1]**4 +60*x[0]**3 -168*x[0]**5*x[1]**2 -56*x[0]*x[1]**6 -180*x[0]*x[1]**2
+    return 8*x[0]**7 - 6*28*x[0]**5*x[1]**2 + 70*4*x[0]**3*x[1]**4 + 4*15*x[0]**3 - 28*2*x[0]*x[1]**6 - 90*2*x[0]*x[1]**2
 
 def dyJ(x):
-    return 8*x[1]**7 +60*x[1]**3 +280*x[0]**4*x[1]**3 -168*x[0]**2*x[1]**5 -180*x[0]**2*x[1] -56*x[0]**6*x[1]
+    return -28*x[0]**6*2*x[1] + 4*70*x[0]**4*x[1]**3 - 28*6*x[0]**2*x[1]**5 - 2*90*x[0]**2*x[1] + 8*x[1]**7 + 4*15*x[1]**3
 
 def dxK(x):
-    return 56*x[1]*x[0]**6 -280*x[1]**3*x[0]**4 +168*x[0]**5*x[0]**2 +180*x[1]*x[0]**2 -8*x[1]**7-60*x[1]**3
+    return 8*7*x[0]**6*x[1] - 5*56*x[0]**4*x[1]**3 + 3*56*x[0]**2*x[1]**5 + 3*60*x[0]**2*x[1] - 8*x[1]**7 - 60*x[1]**3
 
 def dyK(x):
-    return 8*x[0]**7 - 168*x[0]**5*x[1]**2 +280*x[0]**3*x[1]**4 + 60*x[0]**3 -56*x[0]*x[1]**6 -180*x[0]*x[1]**2
+    return 8*x[0]**7 - 3*56*x[0]**5*x[1]**2 + 56*5*x[0]**3*x[1]**4 + 60*x[0]**3 - 7*8*x[0]*x[1]**6 - 60*3*x[0]*x[1]**2
 
 
 class fractal2D:                                                                                    # We create the class fractal2D
@@ -171,7 +171,7 @@ class fractal2D:                                                                
             else:
                 return 0
         for i in range(10000):          # Range is larger because of the horrid convergence
-            if guess[0] > 1e5 or guess[1] > 1e5:
+            if guess[0] > 1e5 or guess[1] > 1e5:    # Divergence stopper 
                 if itersteps == False:
                     return None
                 else:
@@ -181,7 +181,7 @@ class fractal2D:                                                                
             guess = guess-np.dot(np.linalg.inv(JacobianMatrix), np.array([self.pol1([x,y]),self.pol2([x,y])]))
             xNew = guess[0]
             yNew = guess[1]
-            if abs(x-xNew) <= 1.e-6 and abs(y-yNew) <= 1.e-6:
+            if abs(x-xNew) <= 1.e-9 and abs(y-yNew) <= 1.e-9:
                 if itersteps == False:
                     return [xNew, yNew]
                 else:
@@ -271,4 +271,4 @@ p = fractal2D(F, G, dxF, dyF, dxG, dyG)
 q = fractal2D(H, I, dxH, dyH, dxI, dyI)
 r = fractal2D(J, K, dxJ, dyJ, dxK, dyK)
 #Change p to q or r for different polinomials
-r.plotItr(1000, -7.5, 7.5, -7.5, 7.5, 1)
+q.plotItr(500, -7.5, 7.5, -7.5, 7.5, 1)
